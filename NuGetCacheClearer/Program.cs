@@ -43,7 +43,7 @@ namespace NuGetCacheClearer
                         {
                             if (o.Verbose || o.DryRun)
                             {
-                                Console.WriteLine(d);
+                                Console.WriteLine(d.FullName);
                             }
                             if (!o.DryRun)
                             {
