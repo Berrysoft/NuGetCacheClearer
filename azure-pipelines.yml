@@ -55,7 +55,7 @@ jobs:
       archiveType: 'zip'
       archiveFile: '$(Build.ArtifactStagingDirectory)\NuGetCacheClearer.CoreFx.zip'
 
-  - script: dotnet publish $(project) -c Release -f netcoreapp3.1 -o build\native -p:PublishNative=true
+  - script: dotnet publish $(project) -r win-x64 -c Release -f netcoreapp3.1 -o build\native -p:PublishNative=true
     displayName: 'Publish project as native'
 
   - script: del build\native\*.pdb
