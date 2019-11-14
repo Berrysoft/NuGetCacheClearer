@@ -25,29 +25,32 @@ namespace NuGetCacheClearer
 
         static void Work(Options o)
         {
-            var settings = Settings.LoadDefaultSettings(Environment.GetLogicalDrives()[0]);
-            var cache = Directory.CreateDirectory(SettingsUtility.GetGlobalPackagesFolder(settings));
-            foreach (var dir in cache.EnumerateDirectories())
+            foreach (string drive in Environment.GetLogicalDrives())
             {
-#if NETCOREAPP
-                if (!dir.Name.StartsWith('.'))
-#else
-                if (!dir.Name.StartsWith("."))
-#endif
+                var settings = Settings.LoadDefaultSettings(drive);
+                var cache = Directory.CreateDirectory(SettingsUtility.GetGlobalPackagesFolder(settings));
+                foreach (var dir in cache.EnumerateDirectories())
                 {
-                    var verdirs = dir.GetDirectories();
-                    var newestdir = verdirs.MaxSource(d => NuGetVersion.Parse(d.Name), VersionComparer.VersionRelease);
-                    foreach (var d in verdirs)
+#if NETCOREAPP
+                    if (!dir.Name.StartsWith('.'))
+#else
+                    if (!dir.Name.StartsWith("."))
+#endif
                     {
-                        if (d != newestdir)
+                        var verdirs = dir.GetDirectories();
+                        var newestdir = verdirs.MaxSource(d => NuGetVersion.Parse(d.Name), VersionComparer.VersionRelease);
+                        foreach (var d in verdirs)
                         {
-                            if (o.Verbose || o.DryRun)
+                            if (d != newestdir)
                             {
-                                Console.WriteLine(d.FullName);
-                            }
-                            if (!o.DryRun)
-                            {
-                                d.Delete(true);
+                                if (o.Verbose || o.DryRun)
+                                {
+                                    Console.WriteLine(d.FullName);
+                                }
+                                if (!o.DryRun)
+                                {
+                                    d.Delete(true);
+                                }
                             }
                         }
                     }
